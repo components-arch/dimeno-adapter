@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dimeno.adapter.base.RecyclerItem;
+import com.dimeno.adapter.callback.OnItemChildClickCallback;
+import com.dimeno.adapter.callback.OnItemChildLongClickCallback;
 import com.dimeno.adapter.callback.OnItemClickCallback;
 import com.dimeno.adapter.sample.adapter.UserAdapter;
 import com.dimeno.adapter.sample.entity.UserEntity;
@@ -70,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init() {
-        List<UserEntity> list = new ArrayList<>();
+        final List<UserEntity> list = new ArrayList<>();
         for (int i = 0; i < 1; i++) {
             list.add(new UserEntity("张三", i + 1));
         }
@@ -80,6 +83,26 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(View itemView, int position) {
                 mAdapter.getDatas().remove(position);
                 mAdapter.notifyItemRemoved(position + mAdapter.getHeadersCount());
+            }
+        });
+        mAdapter.setOnChildClickCallback(new OnItemChildClickCallback() {
+            @Override
+            public void onItemChildClick(View itemView, int position) {
+                switch (itemView.getId()){
+                    case R.id.tv_name:
+                        Toast.makeText(itemView.getContext(),list.get(position).name,Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+        mAdapter.setOnChildLongClickCallback(new OnItemChildLongClickCallback() {
+            @Override
+            public void onItemChildLongClick(View itemView, int position) {
+                switch (itemView.getId()){
+                    case R.id.tv_age:
+                        Toast.makeText(itemView.getContext(),list.get(position).name,Toast.LENGTH_SHORT).show();
+                        break;
+                }
             }
         });
         mAdapter.setEmpty(new EmptyHolder().onCreateView(mRecycler));

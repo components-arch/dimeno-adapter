@@ -10,8 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.dimeno.adapter.base.RecyclerViewHolder;
+import com.dimeno.adapter.callback.OnHolderChildClickCallback;
+import com.dimeno.adapter.callback.OnHolderChildLongClickCallback;
 import com.dimeno.adapter.callback.OnHolderClickCallback;
 import com.dimeno.adapter.callback.OnHolderLongClickCallback;
+import com.dimeno.adapter.callback.OnItemChildClickCallback;
+import com.dimeno.adapter.callback.OnItemChildLongClickCallback;
 import com.dimeno.adapter.callback.OnItemClickCallback;
 import com.dimeno.adapter.callback.OnItemLongClickCallback;
 import com.dimeno.adapter.holder.HeaderFooterViewHolder;
@@ -32,7 +36,9 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
     protected SparseArray<View> mFooters = new SparseArray<>();
 
     private OnItemClickCallback mItemClickCallback;
+    private OnItemChildClickCallback mItemChildClickCallback;
     private OnItemLongClickCallback mItemLongClickCallback;
+    private OnItemChildLongClickCallback mItemChildLongClickCallback;
 
     private int mHeaderIndex;
     private int mFooterIndex;
@@ -263,6 +269,47 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
                 }
             });
         }
+        if(holder.itemView instanceof ViewGroup){
+            ViewGroup parent = (ViewGroup) holder.itemView;
+            int childCount = parent.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View childAt = parent.getChildAt(i);
+                if(childAt.getId() != View.NO_ID){
+                    childAt.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(mItemChildClickCallback != null){
+                                mItemChildClickCallback.onItemChildClick(view,compatPosition(holder.getLayoutPosition()));
+                            }
+                            if(holder instanceof OnHolderChildClickCallback){
+                                ((OnHolderChildClickCallback) holder).onItemChildClick(view,compatPosition(holder.getLayoutPosition()));
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        if(holder.itemView instanceof ViewGroup){
+            ViewGroup parent = (ViewGroup) holder.itemView;
+            int childCount = parent.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View childAt = parent.getChildAt(i);
+                if(childAt.getId() != View.NO_ID){
+                    childAt.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            if(mItemChildLongClickCallback != null){
+                                mItemChildLongClickCallback.onItemChildLongClick(view,compatPosition(holder.getLayoutPosition()));
+                            }
+                            if(holder instanceof OnHolderChildLongClickCallback){
+                                ((OnHolderChildLongClickCallback) holder).onItemChildLongClick(view,compatPosition(holder.getLayoutPosition()));
+                            }
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
     }
 
     /**
@@ -275,12 +322,30 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
     }
 
     /**
+     * set click callback
+     *
+     * @param callback callback
+     */
+    public void setOnChildClickCallback(OnItemChildClickCallback callback) {
+        this.mItemChildClickCallback = callback;
+    }
+
+    /**
      * set long click callback
      *
      * @param callback callback
      */
     public void setOnLongClickCallback(OnItemLongClickCallback callback) {
         this.mItemLongClickCallback = callback;
+    }
+
+    /**
+     * set childl ong click callback
+     *
+     * @param callback callback
+     */
+    public void setOnChildLongClickCallback(OnItemChildLongClickCallback callback) {
+        this.mItemChildLongClickCallback = callback;
     }
 
     /**
