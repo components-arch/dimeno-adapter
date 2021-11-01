@@ -274,18 +274,23 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
             int childCount = parent.getChildCount();
             for (int i = 0; i < childCount; i++) {
                 View childAt = parent.getChildAt(i);
-                if(childAt.getId() != View.NO_ID){
-                    childAt.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if(mItemChildClickCallback != null){
-                                mItemChildClickCallback.onItemChildClick(view,compatPosition(holder.getLayoutPosition()));
+                if(childAt != null) {
+                    if (!childAt.isClickable()) {
+                        childAt.setClickable(true);
+                    }
+                    if (childAt.getId() != View.NO_ID) {
+                        childAt.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (mItemChildClickCallback != null) {
+                                    mItemChildClickCallback.onItemChildClick(view, compatPosition(holder.getLayoutPosition()));
+                                }
+                                if (holder instanceof OnHolderChildClickCallback) {
+                                    ((OnHolderChildClickCallback) holder).onItemChildClick(view, compatPosition(holder.getLayoutPosition()));
+                                }
                             }
-                            if(holder instanceof OnHolderChildClickCallback){
-                                ((OnHolderChildClickCallback) holder).onItemChildClick(view,compatPosition(holder.getLayoutPosition()));
-                            }
-                        }
-                    });
+                        });
+                    }
                 }
             }
         }
@@ -294,19 +299,24 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
             int childCount = parent.getChildCount();
             for (int i = 0; i < childCount; i++) {
                 View childAt = parent.getChildAt(i);
-                if(childAt.getId() != View.NO_ID){
-                    childAt.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View view) {
-                            if(mItemChildLongClickCallback != null){
-                                mItemChildLongClickCallback.onItemChildLongClick(view,compatPosition(holder.getLayoutPosition()));
+                if(childAt != null) {
+                    if (!childAt.isLongClickable()) {
+                        childAt.setLongClickable(true);
+                    }
+                    if (childAt.getId() != View.NO_ID) {
+                        childAt.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View view) {
+                                if (mItemChildLongClickCallback != null) {
+                                    mItemChildLongClickCallback.onItemChildLongClick(view, compatPosition(holder.getLayoutPosition()));
+                                }
+                                if (holder instanceof OnHolderChildLongClickCallback) {
+                                    ((OnHolderChildLongClickCallback) holder).onItemChildLongClick(view, compatPosition(holder.getLayoutPosition()));
+                                }
+                                return true;
                             }
-                            if(holder instanceof OnHolderChildLongClickCallback){
-                                ((OnHolderChildLongClickCallback) holder).onItemChildLongClick(view,compatPosition(holder.getLayoutPosition()));
-                            }
-                            return false;
-                        }
-                    });
+                        });
+                    }
                 }
             }
         }
